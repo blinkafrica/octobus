@@ -1,7 +1,7 @@
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { DynamicModule, Module } from '@nestjs/common';
 
-import AmqpWorker from './worker';
+import { AmqpWorker } from './worker';
 import { ConfigService } from '@nestjs/config';
 
 export interface AmqpModuleOptions {
@@ -24,7 +24,7 @@ export class AmqpModule {
               options: {
                 urls: [config.getOrThrow<string>('amqp.url')],
                 queue: config.getOrThrow(
-                  `BLINK_MQ_${name.toUpperCase()}_QUEUE`,
+                  `BLINK_MQ_${name.toUpperCase()}_QUEUE`
                 ),
               },
             }),

@@ -19,7 +19,7 @@ export interface LoggerConfig {
   buffer?: NodeJS.WritableStream | Bunyan.WriteFn;
 }
 
-export class BuLogger {
+export class Logger {
   private logger: Bunyan;
 
   constructor(logger: Bunyan);
@@ -47,7 +47,7 @@ export class BuLogger {
    * @param labels annotation of new sub logger
    */
   child(labels: object) {
-    return new BuLogger(this.logger.child(labels));
+    return new Logger(this.logger.child(labels));
   }
 
   /**

@@ -6,8 +6,8 @@ import axios, {
   InternalAxiosRequestConfig,
 } from 'axios';
 
-import { BuLogger } from 'src/log/logger';
-import { dateReviver } from '../internals/strings';
+import { Logger } from 'src/log/logger';
+import { dateReviver } from '../strings';
 
 const defaultAxiosConfig: Partial<AxiosRequestConfig> = {
   transitional: { clarifyTimeoutError: true },
@@ -53,7 +53,7 @@ export interface AgentConfig {
   /**
    * Log axios requests, responses and errors.
    */
-  logger?: BuLogger;
+  logger?: Logger;
 }
 
 export class HttpAgent {
@@ -109,7 +109,7 @@ export class HttpAgent {
    * Log axios requests, responses and errors.
    * @param logger logger setup with axios request/response serializers
    */
-  private useLogger(logger: BuLogger) {
+  private useLogger(logger: Logger) {
     const onRequest = (reqConfig: InternalAxiosRequestConfig<any>) => {
       logger.axiosRequest(reqConfig);
       return reqConfig;

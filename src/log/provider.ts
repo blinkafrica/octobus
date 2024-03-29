@@ -1,12 +1,13 @@
+import { Logger, LoggerConfig } from './logger';
+
 import { Provider } from '@nestjs/common';
-import { BuLogger, LoggerConfig } from './logger';
 import { defaultSerializers } from './serializers';
 
 export const BunyanLogger: (
   name: string,
-  serializers?: string,
-) => Provider<BuLogger> = (name: string, serializers: string = '') => ({
-  provide: BuLogger,
+  serializers?: string
+) => Provider<Logger> = (name: string, serializers: string = '') => ({
+  provide: Logger,
   useFactory: () => {
     // You can provide a default configuration here or load it from a configuration file
     const config: LoggerConfig = {
@@ -14,6 +15,6 @@ export const BunyanLogger: (
       serializers: defaultSerializers(serializers),
     };
 
-    return new BuLogger(config);
+    return new Logger(config);
   },
 });
