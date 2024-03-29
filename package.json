@@ -28,7 +28,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "start:migrate:prod": "yarn typeorm:migration:run && yarn start:prod",
-    "release": "yarn run build && changeset publish"
+    "release": "yarn run build && changeset publish && npm publish --access public"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
