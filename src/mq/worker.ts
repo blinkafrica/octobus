@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export default class AmqpWorker {
+export class AmqpWorker {
   constructor(private readonly config: ConfigService) {}
   getOptions(queue: string, noAck = false): RmqOptions {
     console.log('🚀 ~ AmqpWorker ~ getOptions ~ queue:', queue);
