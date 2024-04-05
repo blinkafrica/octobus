@@ -1,5 +1,11 @@
 # octobus
 
+## 0.3.0
+
+### Minor Changes
+
+- 053b8d2: added appropriate links to the package.json file
+
 ## 0.2.0
 
 ### Minor Changes
