@@ -1,6 +1,6 @@
 {
-  "name": "blink-claud",
-  "version": "0.0.1",
+  "name": "@blinkclaud/octobus",
+  "version": "0.3.0",
   "description": "A toolkit for Blink HQ's microservices",
   "author": "Blink HQ",
   "private": true,
@@ -9,11 +9,15 @@
   "types": "dist/src/main.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+"
+    "url": "git+https://github.com/blinkafrica/octobus"
   },
   "files": [
     "dist/"
   ],
+  "bugs": {
+    "url": "https://github.com/blinkafrica/octobus/issues"
+  },
+  "homepage": "https://github.com/blinkafrica/octobus#readme",
   "scripts": {
     "build": "rimraf dist && npx @nestjs/cli build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
