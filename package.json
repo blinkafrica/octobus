@@ -3,13 +3,13 @@
   "version": "0.3.0",
   "description": "A toolkit for Blink HQ's microservices",
   "author": "Blink HQ",
-  "private": true,
+  "private": false,
   "license": "MIT",
   "main": "dist/src/main.js",
   "types": "dist/src/main.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/blinkafrica/octobus"
+    "url": "git+https://github.com/blinkafrica/octobus.git"
   },
   "files": [
     "dist/"
