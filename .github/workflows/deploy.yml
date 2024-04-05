@@ -1,24 +1,24 @@
 name: Publish package to NPM registry
 
-on:
-  workflow_run:
-    workflows: [CI]
-    branches: [main]
-    types: [completed]
-
 # on:
-#   push:
-#     branches:
-#       - release
-#   pull_request:
-#     branches:
-#       - release
+#   workflow_run:
+#     workflows: [CI]
+#     branches: [main]
+#     types: [completed]
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   publish:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
