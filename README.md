@@ -1,49 +1,82 @@
-# Blink Base Service
+# Blink Octobus
 
-## Description
+![Github Actions](https://github.com/blinkafrica/octobus/actions/workflows/build-test.yml/badge.svg)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
-This is the base service for the Blink project. It acts as a template for other services to be built on top of. It provides a basic structure for a service, including a database connection, a message queue connection, and a basic REST API.
+## About
 
-## Tools
+Octobus is a library that provides utility functions for building microservices such as:
 
-- Docker
-- RabbitMQ
-- NestJS
-- TypeORM
-- PostgreSQL
+- Interservice communication (via REST)
+- Subscribing to events from RabbitMQ queues.
+- Logging
+- Authentication
 
-## Installation
+## Getting Started
 
-```bash
-yarn install
-```
+These instructions will get you a copy of the project up and running on your local machine for development purposes.
 
-## Running the app
+### Prerequisites
 
-```bash
-# development
-$ yarn run start
+The following are required for the best use of Octobus:
 
-# watch mode
-$ yarn run start:dev
+- Package Dependencies
+  - NodeJs (v14 or higher)
+  - Yarn
+  - Typescript (v4.4 or higher)
+- A basic understanding of nodejs and typescript with a good knowledge of nestjs would be an added advantage.
 
-# production mode
-$ yarn run start:prod
-```
+### Installation
 
-## Test
+To install Octobus, run the following command in your terminal
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+yarn install --save @blinkclaud/octobus reflect-metadata
 ```
 
-## License
+To upgrade to a specific version run this command
 
-Blink is [MIT licensed](LICENSE).
+```bash
+yarn upgrade @blinkclaud/octobus@version
+```
+
+To upgrade to latest version run this command
+
+```bash
+yarn upgrade @blinkclaud/octobus --latest
+```
+
+> Note: Octobus requires Typescript (>= v4.4), as well as the `Decorator` experimental feature. Therefore, the following config options should be present in your `tsconfig.json` file:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["es2017", "esnext.asynciterable", "dom"],
+    "types": ["reflect-metadata"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
+```
+
+## Guides
+
+Below are links to detailed explanations to the various features of Octobus as well as practical examples:
+
+- [HTTP (Interservice Comunication)](docs/HTTP.md)
+- [QueueManager (subscribing to RabbitMQ queues)](docs/Manager.md)
+- [Authentication](docs/Authentication.md)
+- [Logging](docs/Logging.md)
+
+## References and Helpful Links
+
+The following links would further aid the understanding of Octobus
+
+- [Typescript Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
+- [AMPQ Client docs for NodeJs](http://www.squaremobius.net/amqp.node/channel_api.html)
+- [Bunyan](https://github.com/trentm/node-bunyan#readme)
+- [Axios](https://axios-http.com/docs/intro)
+- [RabbitMQ messaging queues](https://www.rabbitmq.com/)
