@@ -1,16 +1,24 @@
+import {
+  APIError,
+  HttpError,
+  NoAuthorizationTokenError,
+  NoRequestIDError,
+  TimeoutError,
+} from './errors';
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Request } from 'express';
+
 import FormData from 'form-data';
+import { Request } from 'express';
 import { each } from 'lodash';
+import { encode } from './jwt';
 import qs from 'qs';
 import { v4 } from 'uuid';
 
-import { APIError, HttpError, NoRequestIDError, TimeoutError } from './errors';
 // import { encode } from './jwt';
 
 export interface AuthConfig {
   scheme: string;
-  secret: Uint8Array;
+  secret: string;
   timeout: string;
 }
 
@@ -25,7 +33,7 @@ export type Action = () => Promise<void>;
  */
 export type Plugin<T = any> = (
   req: Partial<AxiosRequestConfig<T>>,
-  defer: (action: Action) => void,
+  defer: (action: Action) => void
 ) => void;
 
 export type RequestData<T extends object> = T | FormData | string;
@@ -37,7 +45,7 @@ export class RequestWrapper<T extends object> {
     protected instance: AxiosInstance,
     protected service: string,
     protected authConfig: AuthConfig,
-    protected request: Partial<AxiosRequestConfig<RequestData<T>>>,
+    protected request: Partial<AxiosRequestConfig<RequestData<T>>>
   ) {
     this.request.headers = Object.assign({}, request.headers);
   }
@@ -117,7 +125,7 @@ export class RequestWrapper<T extends object> {
 
     Object.assign(
       this.request.headers as object,
-      typeof key === 'string' ? { [key]: value } : key,
+      typeof key === 'string' ? { [key]: value } : key
     );
 
     return this;
@@ -145,38 +153,41 @@ export class RequestWrapper<T extends object> {
    * Attach session information to the request
    * @param reqSession authenticated express request or session object for headless request
    */
-  //   auth(reqSession?: Request | any) {
-  //     const isReq = reqSession && 'headers' in reqSession;
+  auth(reqSession?: Request | any, payload?: Record<string, string>) {
+    const isReq = reqSession && 'headers' in reqSession;
 
-  //     if (isReq) {
-  //       if (!reqSession.headers.authorization) {
-  //         throw new NoAuthorizationTokenError(this.request.url);
-  //       }
+    if (isReq) {
+      if (!reqSession.headers.authorization) {
+        throw new NoAuthorizationTokenError(this.request.url);
+      }
 
-  //       Object.assign(this.request.headers, {
-  //         Authorization: reqSession.headers.authorization,
-  //       });
+      Object.assign(this.request.headers, {
+        Authorization: reqSession.headers.authorization,
+      });
 
-  //       return this;
-  //     } else {
-  //       if (!reqSession) {
-  //         reqSession = { service: this.service, request_time: new Date() } as any;
-  //       }
+      return this;
+    } else {
+      if (!reqSession) {
+        reqSession = {
+          service: this.service,
+          request_time: new Date(),
+          ...payload,
+        } as any;
+      }
 
-  //       // push till when the request is being made
-  //       return this.defer(async () => {
-  //         const token = await encode(
-  //           this.authConfig.secret,
-  //           this.authConfig.timeout,
-  //           reqSession,
-  //         );
-
-  //         Object.assign(this.request.headers, {
-  //           Authorization: `${this.authConfig.scheme} ${token}`,
-  //         });
-  //       });
-  //     }
-  //   }
+      // push till when the request is being made
+      return this.defer(async () => {
+        const token = await encode(
+          this.authConfig.secret,
+          this.authConfig.timeout,
+          reqSession
+        );
+        Object.assign(this.request.headers, {
+          Authorization: `${this.authConfig.scheme} ${token}`,
+        });
+      });
+    }
+  }
 
   /**
    * Runs the API request and handles errors.
@@ -195,7 +206,7 @@ export class RequestWrapper<T extends object> {
           throw new APIError(
             err.config!.url as string,
             err.response.status,
-            err.response.data,
+            err.response.data
           );
         } else if (err.request) {
           if (
@@ -204,14 +215,14 @@ export class RequestWrapper<T extends object> {
           ) {
             throw new TimeoutError(
               err.config!.url as string,
-              err.config!.timeout as number,
+              err.config!.timeout as number
             );
           }
           throw new HttpError(err.config!.url as string, err);
         } else {
           throw new Error(err.message);
         }
-      },
+      }
     );
   }
 }
