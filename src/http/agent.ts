@@ -65,7 +65,7 @@ export class HttpAgent {
     this.instance = axios.create({ ...defaultAxiosConfig, ...axiosConfig });
     this.service = config.service;
     this.authConfig = {
-      secret: new TextEncoder().encode(config.secret),
+      secret: config.secret,
       scheme: config.scheme,
       timeout: config.timeout ?? '10s',
     };
