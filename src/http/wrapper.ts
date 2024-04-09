@@ -136,13 +136,11 @@ export class RequestWrapper<T extends object> {
    * @param req source request if there's any
    */
   track(req?: Request) {
-    // make sure request ID exists for non-base requests
-    if (req && !req.headers['x-request-id']) {
-      throw new NoRequestIDError(this.request.url as string);
-    }
-
     Object.assign(this.request.headers as object, {
-      'X-Request-ID': !!req ? req.headers['x-request-id'] : v4(),
+      'X-Request-ID':
+        !!req && req.headers['x-request-id']
+          ? req.headers['x-request-id']
+          : v4(),
       'X-Origin-Service': this.service,
     });
 
