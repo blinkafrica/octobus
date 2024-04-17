@@ -6,29 +6,27 @@ import { ConfigService } from '@nestjs/config';
 
 export interface AmqpModuleOptions {
   name: string;
+  url: string;
 }
 @Module({
   providers: [AmqpWorker],
   exports: [AmqpWorker],
 })
 export class AmqpModule {
-  static queue({ name }: AmqpModuleOptions): DynamicModule {
+  static queue({ name, url }: AmqpModuleOptions): DynamicModule {
     return {
       module: AmqpModule,
       imports: [
         ClientsModule.registerAsync([
           {
             name,
-            useFactory: (config: ConfigService) => ({
+            useFactory: () => ({
               transport: Transport.RMQ,
               options: {
-                urls: [config.getOrThrow<string>('amqp.url')],
-                queue: config.getOrThrow(
-                  `BLINK_MQ_${name.toUpperCase()}_QUEUE`
-                ),
+                urls: [url],
+                queue: name,
               },
             }),
-            inject: [ConfigService],
           },
         ]),
       ],

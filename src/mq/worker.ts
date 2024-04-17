@@ -1,18 +1,16 @@
-import { RmqOptions, Transport } from '@nestjs/microservices';
+import { RmqContext, RmqOptions, Transport } from '@nestjs/microservices';
 
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AmqpWorker {
-  constructor(private readonly config: ConfigService) {}
-  getOptions(queue: string, noAck = false): RmqOptions {
-    console.log('🚀 ~ AmqpWorker ~ getOptions ~ queue:', queue);
+  getOptions(url: string, queue: string, noAck = false): RmqOptions {
     return {
       transport: Transport.RMQ,
       options: {
-        urls: [this.config.getOrThrow<string>('amqp.url')],
-        queue: this.config.getOrThrow(`BLINK_MQ_${queue}_QUEUE`),
+        urls: [url],
+        queue,
         noAck,
         persistent: true,
         queueOptions: {
@@ -20,5 +18,11 @@ export class AmqpWorker {
         },
       },
     };
+  }
+
+  ackMessages(ctx: RmqContext) {
+    const channel = ctx.getChannelRef();
+    const message = ctx.getMessage();
+    channel.ack(message);
   }
 }
