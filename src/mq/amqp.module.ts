@@ -2,7 +2,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { DynamicModule, Module } from '@nestjs/common';
 
 import { AmqpWorker } from './worker';
-import { ConfigService } from '@nestjs/config';
 
 export interface AmqpModuleOptions {
   name: string;
