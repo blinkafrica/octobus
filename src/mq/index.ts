@@ -1,2 +1,3 @@
-export { AmqpModule } from './amqp.module';
-export { AmqpWorker } from './worker';
+export * from "./amqp.module";
+export * from "./worker";
+export * from "./decorator";
