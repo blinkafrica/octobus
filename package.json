@@ -1,6 +1,6 @@
 {
   "name": "@blinkclaud/octobus",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A toolkit for Blink HQ's microservices",
   "author": "Blink HQ",
   "private": false,
