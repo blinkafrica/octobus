@@ -1,16 +1,8 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
-import unset from 'lodash/unset';
+import { cloneDeep, isPlainObject, unset } from 'lodash';
 
-const axiosDefaultHeaders = [
-  'common',
-  'delete',
-  'get',
-  'head',
-  'post',
-  'put',
-  'patch',
-];
+const axiosDefaultHeaders = ['common', 'delete', 'get', 'head', 'post', 'put', 'patch'];
 
 /**
  * Create serializers for common log entries. This entries would
@@ -25,9 +17,9 @@ export function defaultSerializers(...paths: string[]) {
     axios_req: axiosRequest(...paths),
     axios_res: axiosResponse(...paths),
     req: expressRequest(...paths),
-    res: expressResponse,
+    res: expressResponse(...paths),
     event: sanitized(...paths),
-    err: serializeErr,
+    err: serializeErr
   };
 }
 
@@ -63,17 +55,16 @@ export function serializeErr(err: any) {
     stack: getFullErrorStack(err),
     message: err.message,
     name: err.name,
-    ...err,
+    ...err
   };
 }
 
 export function sanitized<T = any>(...paths: string[]) {
   return (data: T) => {
-    if (!data || typeof data !== 'object' || Object.keys(data).length === 0)
-      return data;
+    if (!data || typeof data !== 'object' || Object.keys(data).length === 0) return data;
 
     const dataCopy = { ...data };
-    paths.forEach((p) => unset(dataCopy, p));
+    paths.forEach(p => unset(dataCopy, p));
 
     return dataCopy;
   };
@@ -83,20 +74,13 @@ export function sanitized<T = any>(...paths: string[]) {
  * Create serializer for axios requests
  * @param paths sensitive data pasths
  */
-export function axiosRequest(
-  ...paths: string[]
-): (conf: AxiosRequestConfig) => object {
+export function axiosRequest(...paths: string[]): (conf: AxiosRequestConfig) => object {
   return (conf: AxiosRequestConfig) => {
-    const log = {
-      method: conf.method,
-      url: conf.url,
-      headers: conf.headers,
-      params: conf.params,
-    };
+    const log = { method: conf.method, url: conf.url, headers: conf.headers, params: conf.params };
 
     // remove default header config
     const headers = Object.assign({}, conf.headers);
-    axiosDefaultHeaders.forEach((k) => {
+    axiosDefaultHeaders.forEach(k => {
       delete headers[k];
     });
 
@@ -108,8 +92,7 @@ export function axiosRequest(
     }
 
     if (conf.data && Object.keys(conf.data).length !== 0) {
-      const logBody = { ...conf.data };
-      paths.forEach((p) => unset(logBody, p));
+      const logBody = deepSanitizeObj(conf.data, ...paths);
 
       log['data'] = logBody;
     }
@@ -122,17 +105,10 @@ export function axiosRequest(
  * Serializer for axios responses
  * @param res axios response object
  */
-export function axiosResponse(
-  ...paths: string[]
-): (res: AxiosResponse<any>) => object {
+export function axiosResponse(...paths: string[]): (res: AxiosResponse<any>) => object {
   return (res: AxiosResponse<any>) => {
-    const data = { ...res.data };
-    paths.forEach((p) => unset(data, p));
-    return {
-      statusCode: res.status,
-      headers: res.headers,
-      body: data,
-    };
+    const data = deepSanitizeObj(res.data, ...paths);
+    return { statusCode: res.status, headers: res.headers, body: data };
   };
 }
 
@@ -150,13 +126,11 @@ export function expressRequest(...paths: string[]): (req: Request) => object {
       headers: req.headers,
       params: req.params,
       remoteAddress: req.socket.remoteAddress,
-      remotePort: req.socket.remotePort,
+      remotePort: req.socket.remotePort
     };
 
     if (req.body && Object.keys(req.body).length !== 0) {
-      const logBody = { ...req.body };
-      paths.forEach((p) => unset(logBody, p));
-
+      const logBody = deepSanitizeObj(req.body, ...paths);
       log['body'] = logBody;
     }
 
@@ -166,14 +140,54 @@ export function expressRequest(...paths: string[]): (req: Request) => object {
 
 /**
  * Serializer for express responses
- * @param res express response object
+ * @param paths sensitive data paths
  */
-export function expressResponse(res: Response) {
-  if (!res || !res.statusCode) return res;
+export function expressResponse(...paths: string[]): (res: Response) => object {
+  return (res: Response) => {
+    if (!res || !res.statusCode) return res;
 
-  return {
-    statusCode: res.statusCode,
-    headers: res.getHeaders(),
-    body: res.locals.body,
+    const log = {
+      statusCode: res.statusCode,
+      headers: res.getHeaders()
+    };
+
+    const body =
+      typeof res.locals.body === 'string' && isStringifiedObject(res.locals.body)
+        ? JSON.parse(res.locals.body)
+        : res.locals.body;
+    if (body && Object.keys(body).length !== 0) {
+      const logBody = deepSanitizeObj(body, ...paths);
+
+      log['body'] = logBody;
+    }
+
+    return log;
   };
+}
+
+function isStringifiedObject(str: string): boolean {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function deepSanitizeObj(data: object, ...paths: string[]) {
+  const clone = cloneDeep(data); // Deep clone to avoid any reference issues
+
+  function sanitizeNode(node: any) {
+    if (isPlainObject(node)) {
+      paths.forEach(path => unset(node, path));
+
+      Object.keys(node).forEach(key => sanitizeNode(node[key]));
+    } else if (Array.isArray(node)) {
+      node.forEach((item: any) => sanitizeNode(item));
+    }
+  }
+
+  sanitizeNode(clone);
+
+  return clone;
 }
