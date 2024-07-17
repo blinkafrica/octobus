@@ -1,5 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { MiddlewareConfiguration } from "@nestjs/common/interfaces";
+import { Injectable } from '@nestjs/common';
+import { MiddlewareConfiguration } from '@nestjs/common/interfaces';
+import { ModuleRef } from '@nestjs/core';
+
+export type Constructor = new (...args: never[]) => any;
 
 export interface Group {
   tag: string;
@@ -24,7 +27,7 @@ export interface ParsedHandler {
 
 export function groupDecorator(s: Symbol) {
   return (tag: string, ...middleware: MiddlewareConfiguration[]) => {
-    return (constructor: any) => {
+    return (constructor: Constructor) => {
       Injectable()(constructor); // Make the class injectable
       const metadata: Group = { tag, middleware, constructor };
       Reflect.defineMetadata(s, metadata, constructor);
@@ -54,7 +57,7 @@ export function handlerDecorator(s: Symbol) {
   };
 }
 
-export function parseHandlers(groupKey: Symbol, handlerKey: Symbol): ParsedHandler[] {
+export function parseHandlers(groupKey: Symbol, handlerKey: Symbol, moduleRef: ModuleRef): ParsedHandler[] {
   const groups: Group[] = [];
   const handlers: ParsedHandler[] = [];
 
@@ -66,7 +69,7 @@ export function parseHandlers(groupKey: Symbol, handlerKey: Symbol): ParsedHandl
     const handlerMetadata: Handler[] = Reflect.getMetadata(handlerKey, constructor) || [];
 
     handlerMetadata.forEach(({ tag, method, middleware }) => {
-      const instance = new constructor(); // Create instance for each handler (simplified)
+      const instance = moduleRef.get(constructor, { strict: false }); // Retrieve instance from moduleRef
       const handlerFn = instance[method].bind(instance);
 
       handlers.push({
