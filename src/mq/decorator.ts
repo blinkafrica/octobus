@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { MiddlewareConfiguration } from "@nestjs/common/interfaces";
-import { ModuleRef } from "@nestjs/core";
+import { Injectable } from '@nestjs/common';
+import { MiddlewareConfiguration } from '@nestjs/common/interfaces';
+import { ModuleRef } from '@nestjs/core';
 
 export type Constructor = new (...args: never[]) => any;
 
