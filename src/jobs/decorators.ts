@@ -50,7 +50,7 @@ const cronKey = Symbol.for('cron');
 const defaultJobConfig: JobConfig = {
   retries: 0,
   timeout: '10s',
-  maxComputeTime: '1h',
+  maxComputeTime: '1h'
 };
 
 /**
@@ -85,7 +85,6 @@ export const monthly = (name: string, config?: JobConfig) => job(name, '0 0 1 * 
  * @param name name of the group of cron jobs. helps with referencing the job later
  */
 export function cron(name: string) {
-  console.log('🚀 ~ cron ~ name:', name);
   return function (constructor: any) {
     Injectable()(constructor); // Make the class injectable
 
@@ -101,9 +100,7 @@ export function cron(name: string) {
  * the same name as the `job's`
  */
 export function query(name: string): MethodDecorator {
-  console.log('🚀 ~ query ~ name:', name);
   return function (prototype: any, method: string) {
-    console.log('🚀 ~ prototype:', prototype.constructor);
     let queries: QueryMetadata[] = [];
     if (!Reflect.hasMetadata(queryKey, prototype.constructor)) {
       Reflect.defineMetadata(queryKey, queries, prototype.constructor);
@@ -112,7 +109,6 @@ export function query(name: string): MethodDecorator {
     }
 
     queries.push({ method, name });
-    console.log('🚀 ~ queries:', queries);
   };
 }
 
@@ -131,24 +127,20 @@ export function job(name: string, schedule: string, config?: JobConfig): MethodD
   return function (prototype: any, method: string) {
     let jobs: JobMetadata[] = [];
     if (!Reflect.hasMetadata(jobKey, prototype.constructor)) {
-      console.log('🚀 ~ prototype.constructor:', prototype.constructor);
-      console.log('🚀 ~ jobKey:', jobKey);
       Reflect.defineMetadata(jobKey, jobs, prototype.constructor);
     } else {
       jobs = Reflect.getMetadata(jobKey, prototype.constructor);
     }
 
     jobs.push({ method, name, schedule, ...defaultJobConfig, ...config });
-    console.log('🚀 ~ jobs:', jobs);
   };
 }
 
 export function getJobs(moduleRef: ModuleRef) {
   const groups = collectMetadata<CronMetadata[]>(cronKey, Reflect, []);
-  console.log('🚀 ~ getJobs ~ groups:', groups);
   const jobs: Job<any>[] = [];
 
-  groups.forEach((group) => {
+  groups.forEach(group => {
     const queryMetadata = collectMetadata<QueryMetadata[]>(queryKey, group.constructor);
     const queryMap = keyBy(queryMetadata, 'name');
 
@@ -165,11 +157,10 @@ export function getJobs(moduleRef: ModuleRef) {
         maxComputeTime,
         name: `${group.name.toLowerCase()}.${name}`,
         query: queryFn,
-        job: instance[method].bind(instance),
+        job: instance[method].bind(instance)
       });
     });
   });
-  console.log('🚀 ~ getJobs ~ jobs:', jobs);
 
   return jobs;
 }

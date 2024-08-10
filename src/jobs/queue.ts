@@ -40,7 +40,6 @@ export class RedisQueue<T> {
    * @returns a boolean signifying whether the items we written to the queue
    */
   async fill(ts: T[] | AsyncGenerator<T[]>) {
-    console.log('🚀 ~ RedisQueue<T> ~ fill ~ ts:', ts);
     const length = await this.length();
     if (length > 0 && Array.isArray(ts)) {
       return false;
