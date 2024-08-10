@@ -52,7 +52,6 @@ export class JobRunner {
     }
 
     await Promise.all(preruns);
-    console.log('🚀 ~ JobRunner ~ start ~ preruns:', preruns);
     return;
   }
 
