@@ -10,7 +10,7 @@ import { v4 } from 'uuid';
 
 export interface AuthConfig {
   scheme: string;
-  secret: string;
+  secret: Uint8Array;
   timeout: string;
 }
 
@@ -69,11 +69,11 @@ export class RequestWrapper<T extends object> {
   type(t: 'json' | 'form' | 'urlencoded' = 'json') {
     switch (t) {
       case 'json':
-        Object.assign(this.request.headers as object, { 'Content-Type': 'application/json' });
+        Object.assign(this.request.headers, { 'Content-Type': 'application/json' });
         break;
       case 'urlencoded':
         this.request.data = qs.stringify(this.request.data);
-        Object.assign(this.request.headers as object, { 'Content-Type': 'application/x-www-form-urlencoded' });
+        Object.assign(this.request.headers, { 'Content-Type': 'application/x-www-form-urlencoded' });
         break;
       case 'form':
         const form = new FormData();
@@ -82,7 +82,7 @@ export class RequestWrapper<T extends object> {
         });
 
         this.request.data = form;
-        Object.assign(this.request.headers as object, form.getHeaders());
+        Object.assign(this.request.headers, form.getHeaders());
         break;
     }
 
@@ -102,9 +102,13 @@ export class RequestWrapper<T extends object> {
   set(key: string, value: string): this;
   set(key: string | object, value?: string) {
     let headers = {};
-    typeof key === 'string' ? (headers[key] = value) : (headers = key);
+    if (typeof key === 'string') {
+      headers[key] = value;
+    } else {
+      headers = key;
+    }
 
-    Object.assign(this.request.headers as object, typeof key === 'string' ? { [key]: value } : key);
+    Object.assign(this.request.headers, typeof key === 'string' ? { [key]: value } : key);
 
     return this;
   }
@@ -119,8 +123,8 @@ export class RequestWrapper<T extends object> {
       throw new NoRequestIDError(this.request.url);
     }
 
-    Object.assign(this.request.headers as object, {
-      'X-Request-ID': !!req && req.headers['x-request-id'] ? req.headers['x-request-id'] : v4(),
+    Object.assign(this.request.headers, {
+      'X-Request-ID': !!req ? req.headers['x-request-id'] : v4(),
       'X-Origin-Service': this.service
     });
 
@@ -131,7 +135,7 @@ export class RequestWrapper<T extends object> {
    * Attach session information to the request
    * @param reqSession authenticated express request or session object for headless request
    */
-  auth(reqSession?: Request | any, payload?: Record<string, string>) {
+  auth(reqSession?: Request | any) {
     const isReq = reqSession && 'headers' in reqSession;
 
     if (isReq) {
@@ -144,16 +148,13 @@ export class RequestWrapper<T extends object> {
       return this;
     } else {
       if (!reqSession) {
-        reqSession = {
-          service: this.service,
-          request_time: new Date(),
-          ...payload
-        } as any;
+        reqSession = { service: this.service, request_time: new Date() } as any;
       }
 
       // push till when the request is being made
       return this.defer(async () => {
         const token = await encode(this.authConfig.secret, this.authConfig.timeout, reqSession);
+
         Object.assign(this.request.headers, {
           Authorization: `${this.authConfig.scheme} ${token}`
         });
@@ -175,12 +176,12 @@ export class RequestWrapper<T extends object> {
       res => res.data,
       (err: AxiosError) => {
         if (err.response) {
-          throw new APIError(err.config!.url as string, err.response.status, err.response.data);
+          throw new APIError(err.config.url, err.response.status, err.response.data);
         } else if (err.request) {
           if (err.code === AxiosError.ETIMEDOUT || err.code === AxiosError.ECONNABORTED) {
-            throw new TimeoutError(err.config!.url as string, err.config!.timeout as number);
+            throw new TimeoutError(err.config.url, err.config.timeout);
           }
-          throw new HttpError(err.config!.url as string, err);
+          throw new HttpError(err.config.url, err);
         } else {
           throw new Error(err.message);
         }
