@@ -1,25 +1,24 @@
 import { AuthConfig, RequestWrapper } from './wrapper';
-import axios, {
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
-import { Logger } from 'src/log/logger';
+import { Logger } from '../log/logger';
 import { dateReviver } from '../strings';
 
 const defaultAxiosConfig: Partial<AxiosRequestConfig> = {
   transitional: { clarifyTimeoutError: true },
   transformResponse: [
-    (data) => {
+    data => {
       if (data === '') {
         return {};
       }
 
-      return JSON.parse(data, dateReviver);
-    },
-  ],
+      try {
+        return JSON.parse(data, dateReviver);
+      } catch (error) {
+        return data;
+      }
+    }
+  ]
 };
 
 export enum HttpMethod {
@@ -27,7 +26,7 @@ export enum HttpMethod {
   POST = 'POST',
   PUT = 'PUT',
   PATCH = 'PATCH',
-  DELETE = 'DELETE',
+  DELETE = 'DELETE'
 }
 
 /**
@@ -45,7 +44,7 @@ export interface AgentConfig {
   /**
    * secret and for encrypting & signing requests
    */
-  secret?: string;
+  secret: string;
   /**
    * default timeout for request tokens in seconds. Defaults to 10s
    */
@@ -65,9 +64,9 @@ export class HttpAgent {
     this.instance = axios.create({ ...defaultAxiosConfig, ...axiosConfig });
     this.service = config.service;
     this.authConfig = {
-      secret: config.secret,
+      secret: new TextEncoder().encode(config.secret),
       scheme: config.scheme,
-      timeout: config.timeout ?? '10s',
+      timeout: config.timeout ?? '10s'
     };
 
     if (config.logger) {
@@ -81,11 +80,7 @@ export class HttpAgent {
    * @param url absolute URL of API
    * @param data request body payload
    */
-  makeRequest<T extends object = any>(
-    method: HttpMethod,
-    url: string,
-    data?: T
-  ) {
+  makeRequest<T extends object = any>(method: HttpMethod, url: string, data?: T) {
     const httpRequest: Partial<AxiosRequestConfig> = { method, url };
 
     switch (method) {
@@ -97,12 +92,7 @@ export class HttpAgent {
         httpRequest.data = data;
     }
 
-    return new RequestWrapper(
-      this.instance,
-      this.service,
-      this.authConfig,
-      httpRequest
-    );
+    return new RequestWrapper(this.instance, this.service, this.authConfig, httpRequest);
   }
 
   /**
@@ -110,7 +100,7 @@ export class HttpAgent {
    * @param logger logger setup with axios request/response serializers
    */
   private useLogger(logger: Logger) {
-    const onRequest = (reqConfig: InternalAxiosRequestConfig<any>) => {
+    const onRequest = (reqConfig: InternalAxiosRequestConfig) => {
       logger.axiosRequest(reqConfig);
       return reqConfig;
     };
