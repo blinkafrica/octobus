@@ -15,19 +15,19 @@ export interface AmqpModuleQueueOptions {
 }
 
 @Global()
-@Module({
-  providers: [AmqpWorker],
-  exports: [AmqpWorker]
-})
+@Module({ providers: [AmqpWorker], exports: [AmqpWorker] })
 export class AmqpModule {
   private static globalUrl: string;
 
   /**
-   * Configure the global AMQP URL for all clients in the application.
-   * This sets the default URL for all AmqpModule.queue() calls.
-   * @param {AmqpModuleRootOptions} options
-   * @param {string} options.url - URL of the AMQP server to connect to.
-   * @returns {DynamicModule} - module to be imported by the application.
+   * Get the global AMQP URL
+   */
+  static getGlobalUrl(): string | undefined {
+    return AmqpModule.globalUrl;
+  }
+
+  /**
+   * Configure the AMQP module with global settings (call once in your root module)
    */
   static forRoot(options: AmqpModuleRootOptions): DynamicModule {
     AmqpModule.globalUrl = options.url;
