@@ -1,4 +1,4 @@
-import { Logger } from '@blinkclaud/octobus';
+import { Logger } from '../logging/logger';
 
 /**
  * A function that takes in data and the handler and runs pre or post processing
@@ -15,7 +15,7 @@ export type Middleware = (data: any, handler: (...args: any[]) => Promise<void> 
  */
 export function collapse(
   handler: (...args: any[]) => Promise<void> | void,
-  middleware: Middleware[],
+  middleware: Middleware[]
 ): (...args: any[]) => Promise<void> | void {
   if (middleware.length === 0) {
     return handler;
@@ -25,7 +25,7 @@ export function collapse(
     (a, b) => async (data, handler) =>
       a(data, async (data: any) => {
         b(data, handler);
-      }),
+      })
   );
 
   return (data: any) => final(data, handler);
