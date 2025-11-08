@@ -7,8 +7,8 @@ import { Injectable } from '@nestjs/common';
 export class AmqpWorker {
   /**
    * Return a RmqOptions object that can be used to create an RMQ Microservice.
-   * If the second parameter is a string, it is assumed to be the queue name and the third parameter is the noAck value.
-   * If the second parameter is a boolean, it is assumed to be the noAck value and the first parameter is the queue name.
+   * If called with two or three parameters, the first is the URL, second is the queue name, and third is the optional noAck value.
+   * If called with one or two parameters, the first is the queue name and the second is the optional noAck value.
    * The global AMQP URL can be set using AmqpModule.forRoot() and will be used if the url parameter is not provided.
    * If the url parameter is not provided and the global AMQP URL has not been set, an error will be thrown.
    */
