@@ -86,11 +86,11 @@ The _reset_ function replaces the content a token points to with a new content. 
 
 ### **decommission**_<T = any>_**(token**: _string_**)**: _AsyncNullable\<T>_
 
-The _decomission_ function deletes a token from the Redis store and returns the content the token was pointing to (if it exists) prior to being decomissioned.
+The _decommission_ function deletes a token from the Redis store and returns the content the token was pointing to (if it exists) prior to being decommissioned.
 
 #### Parameters
 
-- **token:** The token to be decomissioned
+- **token:** The token to be decommissioned
 
 #### Return value
 
