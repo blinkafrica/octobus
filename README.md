@@ -66,7 +66,8 @@ yarn upgrade @blinkclaud/octobus --latest
 
 Below are links to detailed explanations to the various features of Octobus as well as practical examples:
 
-- [HTTP (Interservice Comunication)](docs/HTTP.md)
+- [HTTP (Interservice Communication)](docs/HTTP.md)
+- [NatsConsumer (subscribing to Nats topics)](docs/Consumer.md)
 - [QueueManager (subscribing to RabbitMQ queues)](docs/Manager.md)
 - [Authentication](docs/Authentication.md)
 - [Logging](docs/Logging.md)
@@ -80,3 +81,4 @@ The following links would further aid the understanding of Octobus
 - [Bunyan](https://github.com/trentm/node-bunyan#readme)
 - [Axios](https://axios-http.com/docs/intro)
 - [RabbitMQ messaging queues](https://www.rabbitmq.com/)
+- [NATS Messaging](https://docs.nats.io/nats-concepts/what-is-nats)
