@@ -110,7 +110,7 @@ The _revoke_ function deletes a token and its referenced content from Redis with
 
 ## Practical examples
 
-Let's look at practial applications of these utility functions.
+Let's look at practical applications of these utility functions.
 
 ### Step 1: create a Redis Client
 
