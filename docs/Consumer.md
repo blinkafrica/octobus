@@ -1031,9 +1031,10 @@ await consumers.start(nats, logger, {
 
 ```typescript
 // Development
-batch_size: 10,
+await consumers.start(nats, logger, {
+  batch_size: 10,
   namespace: 'my-app-dev',
-  timeout: '30s',
+  timeout: '30s'
 });
 
 // Production
