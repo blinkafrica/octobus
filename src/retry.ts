@@ -62,7 +62,7 @@ export async function retryOnRequest<T = any>(
 
 /**
  * Create a wrapper function that logs input and errror
- * @param logger octonet logger
+ * @param logger octobus logger
  * @param fn function to be wrapped.
  */
 export function wrapHandler<T = any>(logger: Logger, fn: (t: T) => Promise<void>) {

@@ -48,7 +48,7 @@ export class StreamFactory {
   ) {}
 
   /**
-   * Creates a stream factoriy using an existing nats connection
+   * Creates a stream factory using an existing nats connection
    * @param conn nats connection
    */
   static async init(conn: NatsConnection): Promise<StreamFactory>;
@@ -108,7 +108,7 @@ export class StreamFactory {
         );
       }
 
-      // just incase buffer size/retention period has changes
+      // just in case buffer size/retention period has changes
       await this.manager.streams.update(name, {
         ...streamInfo.config,
         subjects: [`${name}.>`],

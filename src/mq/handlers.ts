@@ -23,8 +23,8 @@ export function collapse(
 
   const final = middleware.reduce(
     (a, b) => async (data, handler) =>
-      a(data, async (data: any) => {
-        b(data, handler);
+      await a(data, async (data: any) => {
+        await b(data, handler);
       })
   );
 
@@ -33,7 +33,7 @@ export function collapse(
 
 /**
  * Logs job as `data` and errors if the handler fails.
- * @param logger octonet logger
+ * @param logger octobus logger
  */
 export function loggerMiddleware(logger: Logger): Middleware {
   return async (data: any, handler: (...args: any[]) => Promise<void> | void) => {
