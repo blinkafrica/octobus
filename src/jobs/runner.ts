@@ -1,13 +1,13 @@
-import { ExitError, RetryError, retryOnRequest, wrapHandler } from '../retry';
-import { Job, getJobs } from './decorators';
-import cron, { ScheduledTask } from 'node-cron';
-
-import { Logger } from '../log';
 import { ModuleRef } from '@nestjs/core';
 import { Redis } from 'ioredis';
-import { RedisQueue } from './queue';
 import ms from 'ms';
+import cron, { ScheduledTask } from 'node-cron';
 import { v4 as uuid } from 'uuid';
+
+import { Logger } from '../logging/logger';
+import { ExitError, RetryError, retryOnRequest, wrapHandler } from '../retry';
+import { Job, getJobs } from './decorators';
+import { RedisQueue } from './queue';
 
 interface ScheduledJob<T> extends Job<T> {
   task: ScheduledTask;

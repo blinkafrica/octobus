@@ -1,8 +1,8 @@
-import { AuthConfig, RequestWrapper } from './wrapper';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
-import { Logger } from '../log/logger';
+import { Logger } from '../logging/logger';
 import { dateReviver } from '../strings';
+import { AuthConfig, RequestWrapper } from './wrapper';
 
 const defaultAxiosConfig: Partial<AxiosRequestConfig> = {
   transitional: { clarifyTimeoutError: true },

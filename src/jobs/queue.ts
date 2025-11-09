@@ -1,9 +1,10 @@
-import { RetryError, retryOnRequest } from '../retry';
+import crypto from 'crypto';
 
 import { Injectable } from '@nestjs/common';
-import { Logger } from '../log';
 import Redis from 'ioredis';
-import crypto from 'crypto';
+
+import { Logger } from '../logging/logger';
+import { RetryError, retryOnRequest } from '../retry';
 import { dateReviver } from '../strings';
 
 function backupKey() {

@@ -1,5 +1,6 @@
-import { Logger } from './log/logger';
 import ms from 'ms';
+
+import { Logger } from './logging/logger';
 
 /**
  * Custom error instance to allow handlers request a retry
@@ -61,13 +62,10 @@ export async function retryOnRequest<T = any>(
 
 /**
  * Create a wrapper function that logs input and errror
- * @param logger octonet logger
+ * @param logger octobus logger
  * @param fn function to be wrapped.
  */
-export function wrapHandler<T = any>(
-  logger: Logger,
-  fn: (t: T) => Promise<void>
-) {
+export function wrapHandler<T = any>(logger: Logger, fn: (t: T) => Promise<void>) {
   return async function (data: T) {
     logger.log({ data });
     try {
