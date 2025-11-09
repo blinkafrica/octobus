@@ -88,7 +88,7 @@ const http = new HttpAgent(HTTPAgentConfig)(
         //this happens when a defined error and status code
         console.log(`request failed with status ${error.status} with data ${error.data}`);
       } else if (error instanceof HttpError) {
-        //When an error occurs that doesnt fit into any of the above scenarios then it is treated an ah http error
+        //When an error occurs that doesn't fit into any of the above scenarios then it is treated as an HTTP error
         console.log("Something went wrong, but we don't know what it is.");
         console.log(error.rawError);
       }
