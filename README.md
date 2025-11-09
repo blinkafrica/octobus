@@ -66,7 +66,7 @@ yarn upgrade @blinkclaud/octobus --latest
 
 Below are links to detailed explanations to the various features of Octobus as well as practical examples:
 
-- [HTTP (Interservice Comunication)](docs/HTTP.md)
+- [HTTP (Interservice Communication)](docs/HTTP.md)
 - [NatsConsumer (subscribing to Nats topics)](docs/Consumer.md)
 - [QueueManager (subscribing to RabbitMQ queues)](docs/Manager.md)
 - [Authentication](docs/Authentication.md)
