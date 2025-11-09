@@ -98,5 +98,5 @@ app.get("/test", (err, req, res) => {
 
 // others
 logger.log("transaction service called");
-logger.error("an internal server error has occured");
+logger.error("an internal server error has occurred");
 ```
