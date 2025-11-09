@@ -24,7 +24,7 @@ The _response_ function logs an outgoing HTTP response
 
 ### httpError(err: Error, req: Request, res: Response)
 
-The _httpError_ function Logs an error that occured during the handling of an HTTP request.
+The _httpError_ function Logs an error that occurred during the handling of an HTTP request.
 
 #### Parameters
 
