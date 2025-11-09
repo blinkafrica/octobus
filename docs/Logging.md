@@ -97,6 +97,6 @@ app.get("/test", (err, req, res) => {
 // axios-related utility functions
 
 // others
-logger.log("transactionn service called");
+logger.log("transaction service called");
 logger.error("an internal server error has occured");
 ```
