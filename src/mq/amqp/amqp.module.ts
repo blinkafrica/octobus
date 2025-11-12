@@ -1,5 +1,5 @@
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { DynamicModule, Global, Module } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { AmqpWorker } from './worker';
 
@@ -67,7 +67,6 @@ export class AmqpModule {
               options: {
                 urls: [url],
                 queue: options.queue,
-                noAck: options.noAck ?? false,
                 persistent: true,
                 queueOptions: {
                   durable: true
